@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAP PENCAPAIAN KPI B2C - Branch Bekasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">BK</div>
+    <div>
+      <h1>LAP PENCAPAIAN KPI B2C</h1>
+      <p class="sub">Harian per Service Area &mdash; Branch Bekasi &middot; H: <span id="hd"></span> vs H-1: <span id="h1d"></span></p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="stamp">Sumber: Google Sheets &ldquo;LAP PENCAPAIAN&rdquo;<br><span id="gen"></span></div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="overview" role="tab">Ringkasan</button>
+  <button class="tab" data-tab="indicators" role="tab">Detail Indikator</button>
+  <button class="tab" data-tab="trend" role="tab">Trend &amp; Analisa</button>
+  <button class="tab" data-tab="infografis" role="tab">Infografis</button>
+</nav>
+
+<main>
+<!-- ============ TAB 1: OVERVIEW ============ -->
+<section id="overview" class="panel active">
+  <div class="kpi-strip" id="kpiStrip"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-head">
+        <h2>Achievement per SA &mdash; H vs H-1</h2>
+        <span class="hint">Klik bar untuk lihat detail SA di tab Detail</span>
+      </div>
+      <div class="chart-box tall"><canvas id="achChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Gap H vs H-1 per SA</h2><span class="hint">Semua SA turun; Branch stabil</span></div>
+      <div class="chart-box tall"><canvas id="gapChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Peta pencapaian hari H (05/10/2026)</h2><span class="hint">Warna = skor achievement; label = SA &amp; nilai</span></div>
+    <div class="heat" id="heatGrid"></div>
+    <p class="foot" id="catatanH"></p>
+  </div>
+</section>
+
+<!-- ============ TAB 2: DETAIL INDIKATOR ============ -->
+<section id="indicators" class="panel">
+  <div class="controls">
+    <div class="seg" id="daySeg">
+      <button class="segbtn active" data-day="H">Hari Ini (05/10)</button>
+      <button class="segbtn" data-day="H-1">H-1 (04/10)</button>
+    </div>
+    <div class="sa-chips" id="saChips"></div>
+    <label class="only-miss"><input type="checkbox" id="missOnly"> Hanya yang belum capai target</label>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2 id="indTitle">Detail per indikator &mdash; hari H</h2><span class="hint" id="indHint"></span></div>
+    <div class="chart-box xtall"><canvas id="indChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Tabel detail indikator</h2><span class="hint">Sel merah muda = belum capai target (sesuai laporan asli)</span></div>
+    <div class="table-wrap"><table id="indTable"></table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Heatmap indikator &times; SA &mdash; status vs target</h2><span class="hint">Hijau = capai, merah = belum capai, abu = data 0 belum input</span></div>
+    <div class="table-wrap"><table id="heatTable"></table></div>
+  </div>
+</section>
+
+<!-- ============ TAB 3: TREND & ANALISA ============ -->
+<section id="trend" class="panel">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-head"><h2>Susut skor: ke mana turunnya</h2><span class="hint">Gap negatif H vs H-1, diurutkan terburuk dulu</span></div>
+      <div class="chart-box tall"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Distribusi achievement</h2><span class="hint">Posisi tiap SA; garis = rata-rata branch</span></div>
+      <div class="chart-box tall"><canvas id="distChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Analisa penyebab turun &amp; rekomendasi</h2>
+      <span class="hint">Blok &ldquo;ANALISA PENYEBAB TURUN&rdquo; dari sheet; PIC = pemilik SA</span>
+    </div>
+    <div id="analisaList" class="analisa"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 4: INFOGRAFIS ============ -->
+<section id="infografis" class="panel">
+  <div class="info-hero">
+    <div class="info-hero-left">
+      <div class="info-label">LAPORAN PENCAPAIAN HARI INI</div>
+      <div class="info-branch">BRANCH<span>BEKASI</span></div>
+      <div class="info-meta">8 Service Area &middot; 17 indikator KPI &middot; per <span id="infoDate"></span></div>
+    </div>
+    <div class="info-hero-stats">
+      <div class="ih-stat"><span class="ih-num" id="infoRata">95.35</span><span class="ih-lab">Rata-rata achievement H (%)</span></div>
+      <div class="ih-stat"><span class="ih-num down" id="infoDelta">&minus;3.00</span><span class="ih-lab">vs H-1 (98.35)</span></div>
+      <div class="ih-stat"><span class="ih-num warn" id="infoTurun">8/8</span><span class="ih-lab">SA turun hari ini</span></div>
+      <div class="ih-stat"><span class="ih-num" id="infoBest">KALIABANG</span><span class="ih-lab">SA tertinggi hari ini</span></div>
+      <div class="ih-stat"><span class="ih-num bad" id="infoWorst">SUKMAJAYA</span><span class="ih-lab">SA terendah hari ini</span></div>
+      <div class="ih-stat"><span class="ih-num warn" id="infoMiss">26</span><span class="ih-lab">sel indikator belum capai (H)</span></div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-head">Arah KPI hari ini (H vs H-1)</div>
+      <div class="ic-body">
+        <div class="donut-legend">
+          <div class="chart-box sq"><canvas id="arahChart"></canvas></div>
+          <ul class="legend" id="arahLegend"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">Indikator paling sering jadi penyebab turun</div>
+      <div class="ic-body"><div class="chart-box sq"><canvas id="causeChart"></canvas></div></div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">Top penyebab &amp; kehilangan skor (branch, hari H)</div>
+      <div class="ic-body">
+        <div class="cause-bars" id="causeBars"></div>
+        <p class="foot">Rasio INUSE to INSTOCK skor 0 di semua SA karena data inuse belum diinput ke dashboard &mdash; koreksi input diperlukan sebelum akhir hari.</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">Fokus tindakan per SA (dari blok analisa)</div>
+      <div class="ic-body"><div class="focus-list" id="focusList"></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p>Dibangun dari sheet &ldquo;LAP PENCAPAIAN&rdquo; (spreadsheet kpi-rekap) &middot; nilai, target, bobot, dan rekomendasi disalin apa adanya &middot; indikator &ldquo;belum capai&rdquo; mengikuti aturan laporan asli.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
