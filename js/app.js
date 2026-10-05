@@ -41,13 +41,7 @@
   $("#hd").textContent = LAP.meta.h_date;
   $("#h1d").textContent = LAP.meta.h1_date;
   $("#gen").textContent = "Snapshot: " + LAP.meta.generated;
-  // isi stat hero yang dinamis
-  $("#infoRata").textContent = fmt(rk.rata);
-  $("#infoDelta").textContent = (delta >= 0 ? "+" : "\u2212") + fmt(Math.abs(delta));
-  $("#infoTurun").textContent = `${nTurun}/8`;
-  $("#infoBest").textContent = SA[bestIdx].split(" ")[0];
-  $("#infoWorst").textContent = SA[worstIdx].split(" ")[0];
-  $("#infoMiss").textContent = String(missCells);
+  $("#infoDate").textContent = LAP.meta.h_date;
 
   // ---------- TABS ----------
   const tabs = document.querySelectorAll(".tab");
@@ -361,6 +355,14 @@
   const nTurun = LAP.trend.filter(t => !t.isBranch && t.gap < 0).length;
   const nNaik = LAP.trend.filter(t => !t.isBranch && t.gap > 0).length;
   const nStabil = LAP.trend.filter(t => !t.isBranch && t.gap === 0).length;
+
+  // isi stat hero infografis (semua variabel rk/delta/bestIdx/worstIdx/missCells/nTurun sudah ada)
+  $("#infoRata").textContent = fmt(rk.rata);
+  $("#infoDelta").textContent = (delta >= 0 ? "+" : "\u2212") + fmt(Math.abs(delta));
+  $("#infoTurun").textContent = `${nTurun}/8`;
+  $("#infoBest").textContent = SA[bestIdx].split(" ")[0];
+  $("#infoWorst").textContent = SA[worstIdx].split(" ")[0];
+  $("#infoMiss").textContent = String(missCells);
   new Chart($("#arahChart"), {
     type: "doughnut",
     data: {
